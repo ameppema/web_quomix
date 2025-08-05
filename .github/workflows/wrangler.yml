@@ -1,0 +1,42 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches:
+      - '**'
+
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'production' || 'preview' }}
+    env:
+      CLOUDFLARE_D1_ID: ${{ vars.CLOUDFLARE_D1_ID }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Run install
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install
+          
+      - name: Build production bundle
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: build
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          command: ${{ github.ref_name == 'main' && 'deploy' || format('versions upload --preview-alias {0}', github.ref_name)  }}

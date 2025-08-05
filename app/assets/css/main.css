@@ -1,0 +1,12 @@
+@import 'tailwindcss';
+@import '@nuxt/ui';
+
+@plugin '@tailwindcss/typography';
+
+@theme static {
+  --font-sans: 'Noto Sans', sans-serif;
+
+  --color-quomix-red: #E62531;
+  --color-quomix-black: #171815;
+  --color-quomix-gray: #343434;
+}
