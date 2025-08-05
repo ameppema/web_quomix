@@ -30,11 +30,11 @@ export default defineNuxtConfig({
             enabled: true,
           }
         },
-        kv_namespaces: [
+        d1_databases: [
           {
             binding: 'DB',
-            id: import.meta.env.CLOUDFLARE_D1_ID,
-          },
+            database_id: import.meta.env.CLOUDFLARE_D1_ID,
+          }
         ],
       },
     },
