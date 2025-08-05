@@ -30,6 +30,12 @@ export default defineNuxtConfig({
             enabled: true,
           }
         },
+        routes: [
+          {
+            pattern: 'quomix.io',
+            custom_domain: true,
+          },
+        ],
         d1_databases: [
           {
             binding: 'DB',
