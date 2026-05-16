@@ -28,7 +28,7 @@ const content: Record<Lang, Block> = {
         manifesto: {
             title: 'Por qué esta web no te enseña casi nada',
             paragraphs: [
-                'Bienvenido a una web donde probablemente no encontrarás lo que andabas buscando. Fundamentalmente porque hemos decidido no enseñarlo.',
+                'Bienvenido a nuestra web, probablemente no encontrarás una muestra de lo que andabas buscando. Ni siquiera intentamos explicarnos demasiado. Si encuentras lo que buscas, probablemente también nos encuentres a nosotros.',
                 'No queremos que nos representen tres pantallazos de proyectos más o menos afortunados, por más éxitos que nos hayan deparado. Un buen software no se entiende mirándolo: se entiende viviéndolo, y entendiendo el problema que resolvió.',
                 'Creemos, firmemente, en la tecnología como un discurso de largo recorrido, no como una pieza aislada. Creemos en la consistencia, en la excelencia y en hacer pocas cosas, muy bien hechas, para muy poca gente.',
                 'Nada de lo que podamos mostrarte aquí sustituye una buena conversación de un par de horas con las personas que escribirían tu código. Antes que nada debe funcionar eso tan sutil que llamamos química.',
@@ -36,7 +36,7 @@ const content: Record<Lang, Block> = {
         },
         who: {
             title: '¿Quién eres?',
-            intro: 'Permítenos que nos presentemos: somos Quomix, una empresa de software que no acaba de sentirse cómoda con esa definición. ¿Y tú?',
+            intro: 'Permítenos que nos presentemos: somos Quomix, una boutique de software que crea y construye soluciones útiles para las personas. ¿Y tú?',
             items: [
                 {
                     label: 'Eres un posible cliente',
@@ -90,7 +90,7 @@ const content: Record<Lang, Block> = {
         manifesto: {
             title: 'Why this website shows you almost nothing',
             paragraphs: [
-                'Welcome to a website where you probably won’t find what you were looking for. Basically, because we have chosen not to show it.',
+                'Welcome to our website, you probably won’t find a sample of what you were looking for. We don’t even try to explain ourselves too much. If you find what you’re looking for, you’ll probably also find us.',
                 'We don’t want to be represented by three screenshots of more or less fortunate projects, no matter how much success they brought us. Good software isn’t understood by looking at it: it’s understood by living it, and by understanding the problem it solved.',
                 'We firmly believe in technology as a long-term discourse, not as an isolated piece. We believe in consistency, in excellence, and in doing few things, extremely well, for very few people.',
                 'Nothing we could show you here replaces a good two-hour conversation with the people who would write your code. Above all, that subtle thing we call chemistry has to work.',
@@ -98,7 +98,7 @@ const content: Record<Lang, Block> = {
         },
         who: {
             title: 'Who are you?',
-            intro: 'Allow us to introduce ourselves: we’re Quomix, a software company that never quite felt comfortable with that definition. And you?',
+            intro: 'Allow us to introduce ourselves: we’re Quomix, a software boutique that creates and builds useful solutions for people. And you?',
             items: [
                 {
                     label: 'You’re a possible client',
@@ -151,10 +151,11 @@ const t = computed(() => content[lang.value])
 const intro = computed(() => [...t.value.manifesto.paragraphs, t.value.who.intro])
 
 const current = ref(0)
-const allRevealed = computed(() => current.value >= intro.value.length - 1)
+// Hay un paso extra después del último párrafo: las opciones de "¿Y tú?"
+const isOptionsStep = computed(() => current.value >= intro.value.length)
 
 function revealNext() {
-    if (current.value < intro.value.length - 1) current.value++
+    if (current.value < intro.value.length) current.value++
 }
 
 function revealPrev() {
@@ -163,6 +164,9 @@ function revealPrev() {
 
 const moreLabel = computed(() => (lang.value === 'es' ? 'Seguir' : 'Continue'))
 const backLabel = computed(() => (lang.value === 'es' ? 'Atrás' : 'Back'))
+const selectedWho = computed(() =>
+    openIndex.value === null ? null : t.value.who.items[openIndex.value] ?? null,
+)
 
 function paragraphClass(i: number) {
     if (i === 0) return 'text-2xl md:text-3xl font-medium tracking-tight text-quomix-black'
@@ -175,6 +179,7 @@ function paragraphClass(i: number) {
     <div class="mx-auto w-full max-w-2xl px-6 py-12 md:py-20 leading-relaxed">
         <Transition name="reveal" mode="out-in">
             <p
+                v-if="!isOptionsStep"
                 :key="`${lang}-${current}`"
                 :class="paragraphClass(current)"
             >
@@ -182,7 +187,7 @@ function paragraphClass(i: number) {
             </p>
         </Transition>
 
-        <div class="mt-10 flex items-center justify-between">
+        <div class="flex items-center justify-between" :class="isOptionsStep ? 'mt-0' : 'mt-10'">
             <button
                 v-if="current > 0"
                 type="button"
@@ -205,7 +210,7 @@ function paragraphClass(i: number) {
             <span v-else />
 
             <button
-                v-if="!allRevealed"
+                v-if="!isOptionsStep"
                 type="button"
                 class="group inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-quomix-gray transition-colors hover:text-quomix-red"
                 @click="revealNext"
@@ -226,30 +231,41 @@ function paragraphClass(i: number) {
         </div>
 
         <Transition name="reveal">
-            <div v-if="allRevealed">
-                <ul class="mt-12 flex flex-col">
-                    <li
-                        v-for="(item, index) in t.who.items"
-                        :key="index"
-                        class="border-t border-black/10 last:border-b"
-                    >
-                        <button
-                            type="button"
-                            class="w-full text-left py-4 text-base md:text-lg tracking-tight transition-colors hover:text-quomix-red"
-                            :class="openIndex === index ? 'font-bold text-quomix-red' : 'font-medium'"
-                            :aria-expanded="openIndex === index"
-                            @click="select(index)"
+            <div v-if="isOptionsStep">
+                <div class="mt-8">
+                    <div>
+                        <div class="flex flex-wrap gap-x-5 gap-y-3">
+                            <button
+                                v-for="(item, index) in t.who.items"
+                                :key="index"
+                                type="button"
+                                class="text-sm md:text-base tracking-tight transition-colors"
+                                :class="openIndex === index
+                                    ? 'font-semibold text-quomix-red'
+                                    : 'font-medium text-quomix-black hover:text-quomix-red'"
+                                :aria-pressed="openIndex === index"
+                                @click="select(index)"
+                            >
+                                <span
+                                    v-if="openIndex === index"
+                                    class="mr-1.5 text-quomix-gray"
+                                >▸</span>{{ item.label }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <Transition name="reveal">
+                        <div
+                            v-if="selectedWho"
+                            :key="openIndex ?? -1"
+                            class="mt-10 space-y-4"
                         >
-                            {{ item.label }}
-                        </button>
-                        <p
-                            v-show="openIndex === index"
-                            class="pb-6 text-base font-light text-quomix-gray"
-                        >
-                            {{ item.body }}
-                        </p>
-                    </li>
-                </ul>
+                            <p class="ml-auto max-w-md text-right text-base md:text-lg font-light text-quomix-gray">
+                                {{ selectedWho.body }}
+                            </p>
+                        </div>
+                    </Transition>
+                </div>
 
                 <p class="mt-20 text-base md:text-lg font-light text-quomix-gray">
                     {{ t.closing.body }}
