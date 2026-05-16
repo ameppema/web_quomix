@@ -1,34 +1,22 @@
 <script setup lang="ts">
-const { data: pages } = useNuxtData('pages')
+const { lang, toggle } = useLang()
 </script>
 
 <template>
-    <header class="bg-default py-6 md:py-12 sticky top-0 shadow">
-        <UContainer class="flex justify-between items-center px-6">
-            <NuxtLink to="/">
-                <QuomixLogo class="h-12 md:h-16 text-highlighted" />
+    <header class="py-8 md:py-12">
+        <div class="mx-auto w-full max-w-2xl px-6 flex justify-between items-center">
+            <NuxtLink to="/" aria-label="Quomix">
+                <QuomixLogo class="h-7 md:h-8 text-quomix-black" />
             </NuxtLink>
 
-            <QuomixModal>
-                <UButton
-                    variant="ghost" 
-                    color="neutral" 
-                    :ui="{ leadingIcon: 'size-8' }"
-                    icon="material-symbols:menu-rounded"
-                />
-                <template #body>
-                    <div class="flex flex-col text-center gap-4">
-                        <NuxtLink
-                            v-for="page in pages" 
-                            :key="page.id" 
-                            :to="page.path.split('/').pop()"
-                            class="p-4 rounded-full bg-elevated text-quomix-red font-bold"
-                        >
-                            {{ page.title }}
-                        </NuxtLink>
-                    </div>
-                </template>
-            </QuomixModal>
-        </UContainer>
+            <button
+                type="button"
+                class="text-sm tracking-wide hover:text-quomix-red transition-colors"
+                :aria-label="lang === 'es' ? 'Switch to English' : 'Cambiar a español'"
+                @click="toggle"
+            >
+                {{ lang === 'es' ? 'EN' : 'ES' }}
+            </button>
+        </div>
     </header>
 </template>

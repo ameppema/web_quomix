@@ -22,7 +22,7 @@ onMounted(() => {
 
 <template>
   <UApp>
-    <div class="bg-quomix-red min-h-[100svh] flex flex-col">
+    <div class="bg-white text-quomix-black min-h-svh flex flex-col">
       <QuomixHeader />
       <main class="grow flex">
         <NuxtPage />

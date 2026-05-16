@@ -4,7 +4,7 @@
 @plugin '@tailwindcss/typography';
 
 @theme static {
-  --font-sans: 'Noto Sans', sans-serif;
+  --font-sans: 'Space Grotesk', sans-serif;
 
   --color-quomix-red: #E62531;
   --color-quomix-black: #171815;
