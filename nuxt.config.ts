@@ -48,6 +48,10 @@ export default defineNuxtConfig({
             pattern: 'quomix.io',
             custom_domain: true,
           },
+          {
+            pattern: 'www.quomix.io',
+            custom_domain: true,
+          }
         ],
         d1_databases: [
           {
